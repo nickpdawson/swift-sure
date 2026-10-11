@@ -26,7 +26,13 @@ final class SubscriptionAccessStore {
     self.gate = gate
   }
 
-  var hasAccess: Bool { !isChecking && accessEnd != nil && gate.isAllowed }
+  var hasAccess: Bool {
+    #if SURE_SELF_HOSTED
+    return gate.isAllowed
+    #else
+    return !isChecking && accessEnd != nil && gate.isAllowed
+    #endif
+  }
 
   func monitor() async {
     // Observe while loading the initial snapshot so purchase changes are not missed.

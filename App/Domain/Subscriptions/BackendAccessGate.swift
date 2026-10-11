@@ -16,7 +16,17 @@ final class BackendAccessGate: @unchecked Sendable {
 
   init(now: @escaping @Sendable () -> Date = { Date() }) { self.now = now }
 
-  var isAllowed: Bool { lock.withLock { expiration.map { $0 > now() } ?? false } }
+  /// Call under `lock`. Self-hosted builds (dzsec) have no StoreKit entitlement and are
+  /// always entitled; the public build keeps the subscription expiration check.
+  private var entitled: Bool {
+    #if SURE_SELF_HOSTED
+    return true
+    #else
+    return expiration.map { $0 > now() } == true
+    #endif
+  }
+
+  var isAllowed: Bool { lock.withLock { entitled } }
 
   func isAllowed(for url: URL?) -> Bool {
     isAllowed || SureDemoServer.allowsRequest(to: url)
@@ -25,7 +35,7 @@ final class BackendAccessGate: @unchecked Sendable {
   func update(expiration: Date?) {
     let callbacks = lock.withLock {
       self.expiration = expiration
-      guard expiration.map({ $0 > now() }) != true else { return [@Sendable () -> Void]() }
+      guard !entitled else { return [@Sendable () -> Void]() }
       generation += 1
       let subscriptionIDs = cancellations.compactMap { id, entry -> UUID? in
         guard case .subscription = entry.0 else { return nil }
@@ -47,7 +57,7 @@ final class BackendAccessGate: @unchecked Sendable {
 
   func permit() throws -> Permit {
     try lock.withLock {
-      guard expiration.map({ $0 > now() }) == true else { throw BackendAccessError.subscriptionRequired }
+      guard entitled else { throw BackendAccessError.subscriptionRequired }
       return .subscription(generation)
     }
   }
@@ -62,7 +72,7 @@ final class BackendAccessGate: @unchecked Sendable {
       let valid: Bool
       switch permit {
       case .subscription(let issuedGeneration):
-        valid = generation == issuedGeneration && expiration.map({ $0 > now() }) == true
+        valid = generation == issuedGeneration && entitled
       case .demo:
         valid = SureDemoServer.allowsRequest(to: url)
       }
@@ -77,7 +87,7 @@ final class BackendAccessGate: @unchecked Sendable {
     try lock.withLock {
       switch permit {
       case .subscription(let issuedGeneration):
-        guard generation == issuedGeneration, expiration.map({ $0 > now() }) == true else {
+        guard generation == issuedGeneration, entitled else {
           throw BackendAccessError.subscriptionRequired
         }
       case .demo:
