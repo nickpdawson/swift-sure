@@ -105,8 +105,8 @@
           "CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]" : "App\/iOS.entitlements",
           "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" : "App\/macOS.entitlements",
           "SWIFT_ACTIVE_COMPILATION_CONDITIONS" : "$(inherited) SURE_SELF_HOSTED",
-          "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos*]" : "$(inherited) FINANCEKIT_ENABLED SURE_SELF_HOSTED",
-          "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator*]" : "$(inherited) FINANCEKIT_ENABLED SURE_SELF_HOSTED",
+          "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphoneos*]" : "$(inherited) SURE_SELF_HOSTED",
+          "SWIFT_ACTIVE_COMPILATION_CONDITIONS[sdk=iphonesimulator*]" : "$(inherited) SURE_SELF_HOSTED",
           "CURRENT_PROJECT_VERSION" : "1",
           "DEBUG_INFORMATION_FORMAT[sdk=iphoneos*]" : "dwarf-with-dsym",
           "MARKETING_VERSION" : "0.7.4",
@@ -261,7 +261,7 @@
       "settings": {
         "base": {
           "PRODUCT_BUNDLE_IDENTIFIER": "com.shifthuman.sure.uitest-host",
-          "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) FINANCEKIT_ENABLED",
+          "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited)",
           "GENERATE_INFOPLIST_FILE": "YES",
           "SWIFT_VERSION": "5.0",
           "TARGETED_DEVICE_FAMILY": "1,2",
