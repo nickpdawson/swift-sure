@@ -117,7 +117,11 @@
         },
         "configs" : {
           "Release" : {
-            "CODE_SIGN_STYLE" : "Automatic"
+            "CODE_SIGN_STYLE" : "Automatic",
+            "CODE_SIGN_STYLE[sdk=iphoneos*]" : "Manual",
+            "CODE_SIGN_IDENTITY[sdk=iphoneos*]" : "Apple Distribution",
+            "DEVELOPMENT_TEAM[sdk=iphoneos*]" : "3ELWNV29J2",
+            "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" : "Sure App Store"
           }
         }
       },
@@ -196,7 +200,11 @@
         },
         "configs" : {
           "Release" : {
-            "CODE_SIGN_STYLE" : "Automatic"
+            "CODE_SIGN_STYLE" : "Automatic",
+            "CODE_SIGN_STYLE[sdk=watchos*]" : "Manual",
+            "CODE_SIGN_IDENTITY[sdk=watchos*]" : "Apple Distribution",
+            "DEVELOPMENT_TEAM[sdk=watchos*]" : "3ELWNV29J2",
+            "PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" : "Sure Watch App Store"
           }
         }
       },

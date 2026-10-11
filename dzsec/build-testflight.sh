@@ -39,6 +39,30 @@ mkdir -p "$EV"
 echo "log: $LOG"
 
 AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID")
+PROFILE_APP="Sure App Store"
+PROFILE_WATCH="Sure Watch App Store"
+BUNDLE_ID_WATCH=$BUNDLE_ID.watchkitapp
+
+# Signing keychain: the TurnPro/OneApp release pattern. The Apple Distribution identity lives in
+# a dedicated keychain whose password sits in ~/rto-build/.kcpass on this host and is never
+# printed. It is unlocked and made default for the build; the original keychain settings are
+# restored on exit whatever happens.
+KC=$HOME/Library/Keychains/rto-build.keychain-db
+[ -f "$KC" ] || refuse "no build keychain at $KC"
+[ -f "$HOME/rto-build/.kcpass" ] || refuse "no keychain password file"
+ORIGINAL_DEFAULT=$(security default-keychain -d user | python3 -c 'import shlex,sys; v=shlex.split(sys.stdin.read()); assert len(v)==1; print(v[0])')
+ORIGINAL_SEARCH=()
+while IFS= read -r item; do ORIGINAL_SEARCH+=("$item"); done < <(security list-keychains -d user | python3 -c 'import shlex,sys; print("\n".join(shlex.split(sys.stdin.read())))')
+[ "${#ORIGINAL_SEARCH[@]}" -gt 0 ] || refuse "cannot capture keychain search list"
+restore_keychain() {
+  security default-keychain -d user -s "$ORIGINAL_DEFAULT" || echo "WARNING: default keychain not restored" >&2
+  security list-keychains -d user -s "${ORIGINAL_SEARCH[@]}" || echo "WARNING: keychain search list not restored" >&2
+}
+trap restore_keychain EXIT
+security unlock-keychain -p "$(cat "$HOME/rto-build/.kcpass")" "$KC" || refuse "keychain unlock failed"
+security default-keychain -d user -s "$KC"
+security list-keychains -d user -s "$KC" "${ORIGINAL_SEARCH[@]}"
+security find-identity -v -p codesigning "$KC" | grep -q "Apple Distribution: Nick Dawson ($TEAM_ID)" || refuse "Distribution identity not in build keychain"
 
 {
 echo "START $(date -u +%FT%TZ) build=$BUILD"
@@ -59,7 +83,7 @@ echo "--- xcodegen ---"
 echo "--- archive ---"
 if taskpolicy -b nice -n 10 xcodebuild -project "$SRC/Sure.xcodeproj" -scheme Sure -configuration Release \
     -destination 'generic/platform=iOS' -derivedDataPath "$DD" -archivePath "$ARCHIVE" \
-    "${AUTH[@]}" DEVELOPMENT_TEAM="$TEAM_ID" CURRENT_PROJECT_VERSION="$BUILD" archive; then
+    CURRENT_PROJECT_VERSION="$BUILD" archive; then
   echo ARCHIVE_EXIT=0
 else refuse "archive failed"; fi
 
@@ -70,7 +94,13 @@ cat > "$EV/ExportOptions.plist" <<PLIST
   <key>method</key><string>app-store-connect</string>
   <key>destination</key><string>export</string>
   <key>teamID</key><string>$TEAM_ID</string>
-  <key>signingStyle</key><string>automatic</string>
+  <key>signingStyle</key><string>manual</string>
+  <key>signingCertificate</key><string>Apple Distribution</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>$BUNDLE_ID</key><string>$PROFILE_APP</string>
+    <key>$BUNDLE_ID_WATCH</key><string>$PROFILE_WATCH</string>
+  </dict>
   <key>uploadSymbols</key><true/>
   <key>manageAppVersionAndBuildNumber</key><false/>
 </dict></plist>
@@ -78,7 +108,7 @@ PLIST
 
 echo "--- export ---"
 if taskpolicy -b nice -n 10 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
-    -exportOptionsPlist "$EV/ExportOptions.plist" -exportPath "$EXPORT" "${AUTH[@]}"; then
+    -exportOptionsPlist "$EV/ExportOptions.plist" -exportPath "$EXPORT"; then
   echo EXPORT_EXIT=0
 else refuse "export failed"; fi
 shopt -s nullglob; IPAS=("$EXPORT"/*.ipa); [ "${#IPAS[@]}" -eq 1 ] || refuse "expected one IPA"
@@ -103,6 +133,7 @@ for k, v in {'CFBundleIdentifier': bundle, 'CFBundleShortVersionString': mv, 'CF
              'MinimumOSVersion': '18.0', 'CFBundleExecutable': 'Sure'}.items():
     need(info.get(k) == v, f'Info.plist {k}={info.get(k)!r}, expected {v!r}')
 need(info.get('ITSAppUsesNonExemptEncryption') is False, 'ITSAppUsesNonExemptEncryption missing')
+need(profile.get('Name') == 'Sure App Store', f"unexpected profile {profile.get('Name')!r}")
 need(profile.get('TeamIdentifier') == [team], 'profile team mismatch')
 need(profile.get('ExpirationDate', datetime.datetime.min) > datetime.datetime.utcnow(), 'expired profile')
 need(not profile.get('ProvisionedDevices') and not profile.get('ProvisionsAllDevices', False), 'not an App Store profile')
