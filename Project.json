@@ -54,7 +54,7 @@
           "SureSentryDSN" : "$(SURE_SENTRY_DSN)",
           "SureFinanceKitKeychainAccessGroup" : "$(AppIdentifierPrefix)com.shifthuman.sure.financekit",
           "CFBundleDisplayName" : "Sure",
-          "CFBundleShortVersionString" : "0.7.4",
+          "CFBundleShortVersionString" : "$(MARKETING_VERSION)",
           "CFBundleURLTypes" : [
             {
               "CFBundleTypeRole" : "Editor",
@@ -64,7 +64,7 @@
               ]
             }
           ],
-          "CFBundleVersion" : "1",
+          "CFBundleVersion" : "$(CURRENT_PROJECT_VERSION)",
           "ITSAppUsesNonExemptEncryption" : false,
           "NSFinancialDataUsageDescription" : "Sure uses financial data from Wallet for the on-device account preview and, only when you separately enable it, to sync selected accounts and transactions to your Sure family.",
           "LSApplicationCategoryType" : "public.app-category.finance",
@@ -171,8 +171,8 @@
         "path" : "Watch\/Info.plist",
         "properties" : {
           "CFBundleDisplayName" : "Sure",
-          "CFBundleShortVersionString" : "0.7.4",
-          "CFBundleVersion" : "1",
+          "CFBundleShortVersionString" : "$(MARKETING_VERSION)",
+          "CFBundleVersion" : "$(CURRENT_PROJECT_VERSION)",
           "ITSAppUsesNonExemptEncryption" : false,
           "WKApplication" : true,
           "WKCompanionAppBundleIdentifier" : "com.shifthuman.sure"
