@@ -1,7 +1,7 @@
 import Foundation
 
 struct FinanceKitPublisherEnvironment: Sendable {
-  static let applicationGroupIdentifier = "group.am.sure.insights.financekit"
+  static let applicationGroupIdentifier = "group.com.shifthuman.sure.financekit"
   static let keychainGroupInfoKey = "SureFinanceKitKeychainAccessGroup"
 
   var stateURL: URL

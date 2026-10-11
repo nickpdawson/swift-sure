@@ -52,13 +52,13 @@
           "SurePostHogProjectToken" : "$(SURE_POSTHOG_PROJECT_TOKEN)",
           "SurePostHogHost" : "$(SURE_POSTHOG_HOST)",
           "SureSentryDSN" : "$(SURE_SENTRY_DSN)",
-          "SureFinanceKitKeychainAccessGroup" : "$(AppIdentifierPrefix)am.sure.insights.financekit",
+          "SureFinanceKitKeychainAccessGroup" : "$(AppIdentifierPrefix)com.shifthuman.sure.financekit",
           "CFBundleDisplayName" : "Sure",
           "CFBundleShortVersionString" : "0.7.4",
           "CFBundleURLTypes" : [
             {
               "CFBundleTypeRole" : "Editor",
-              "CFBundleURLName" : "am.sure.insights.oauth",
+              "CFBundleURLName" : "com.shifthuman.sure.oauth",
               "CFBundleURLSchemes" : [
                 "sureapp"
               ]
@@ -109,7 +109,7 @@
           "CURRENT_PROJECT_VERSION" : "1",
           "DEBUG_INFORMATION_FORMAT[sdk=iphoneos*]" : "dwarf-with-dsym",
           "MARKETING_VERSION" : "0.7.4",
-          "PRODUCT_BUNDLE_IDENTIFIER" : "am.sure.insights",
+          "PRODUCT_BUNDLE_IDENTIFIER" : "com.shifthuman.sure",
           "PRODUCT_NAME" : "$(TARGET_NAME)",
           "SWIFT_VERSION" : "5.0",
           "TARGETED_DEVICE_FAMILY" : "1,2"
@@ -170,7 +170,7 @@
           "CFBundleVersion" : "1",
           "ITSAppUsesNonExemptEncryption" : false,
           "WKApplication" : true,
-          "WKCompanionAppBundleIdentifier" : "am.sure.insights"
+          "WKCompanionAppBundleIdentifier" : "com.shifthuman.sure"
         }
       },
       "platform" : "watchOS",
@@ -189,7 +189,7 @@
           "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME" : "AccentColor",
           "CURRENT_PROJECT_VERSION" : "1",
           "MARKETING_VERSION" : "0.7.4",
-          "PRODUCT_BUNDLE_IDENTIFIER" : "am.sure.insights.watchkitapp",
+          "PRODUCT_BUNDLE_IDENTIFIER" : "com.shifthuman.sure.watchkitapp",
           "PRODUCT_NAME" : "$(TARGET_NAME)",
           "SWIFT_VERSION" : "5.0"
         },
@@ -259,7 +259,7 @@
       ],
       "settings": {
         "base": {
-          "PRODUCT_BUNDLE_IDENTIFIER": "am.sure.uitest-host",
+          "PRODUCT_BUNDLE_IDENTIFIER": "com.shifthuman.sure.uitest-host",
           "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited) FINANCEKIT_ENABLED",
           "GENERATE_INFOPLIST_FILE": "YES",
           "SWIFT_VERSION": "5.0",
